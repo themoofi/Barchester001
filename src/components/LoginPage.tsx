@@ -22,7 +22,7 @@ export function LoginPage() {
       if (result.success) {
         navigate('/dashboard');
       } else {
-        setError(result.error || 'Invalid credentials. Please try again.');
+        setError('Invalid email or password. Please check your credentials or sign up if you don\'t have an account.');
       }
     } catch (err) {
       setError('Login failed. Please try again.');
