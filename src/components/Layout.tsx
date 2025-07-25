@@ -1,8 +1,9 @@
 import React, { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { LogOut } from 'lucide-react';
+import { LogOut, Shield } from 'lucide-react';
 import { SubscriptionStatus } from './SubscriptionStatus';
+import { useProfile } from '../hooks/useProfile';
 
 interface LayoutProps {
   children: ReactNode;
@@ -10,6 +11,7 @@ interface LayoutProps {
 
 export function Layout({ children }: LayoutProps) {
   const { user, logout } = useAuth();
+  const { profile } = useProfile();
 
   if (!user) {
     return <>{children}</>;
@@ -29,12 +31,34 @@ export function Layout({ children }: LayoutProps) {
                   Brothers in Islam
                 </div>
               </Link>
+              
+              {/* Navigation Links */}
+              <div className="hidden md:flex items-center space-x-6 ml-8">
+                <Link to="/dashboard" className="text-slate-300 hover:text-white transition-colors">
+                  Dashboard
+                </Link>
+                <Link to="/events" className="text-slate-300 hover:text-white transition-colors">
+                  Events
+                </Link>
+                <Link to="/about" className="text-slate-300 hover:text-white transition-colors">
+                  About
+                </Link>
+                <Link to="/profile" className="text-slate-300 hover:text-white transition-colors">
+                  Profile
+                </Link>
+                {profile?.is_admin && (
+                  <Link to="/admin" className="text-gold-400 hover:text-gold-300 transition-colors flex items-center space-x-1">
+                    <Shield className="h-4 w-4" />
+                    <span>Admin</span>
+                  </Link>
+                )}
+              </div>
             </div>
             
             <div className="flex items-center space-x-4">
               <SubscriptionStatus />
               <div className="text-white text-sm">
-                As-salamu alaikum, {user.email?.split('@')[0]}
+                As-salamu alaikum, {profile?.full_name || user.email?.split('@')[0]}
               </div>
               <button
                 onClick={logout}

@@ -1,10 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useProfile } from '../hooks/useProfile';
 import { Calendar, Plus, Users, MapPin, Gift, Settings, CreditCard } from 'lucide-react';
 
 export function Dashboard() {
   const { user } = useAuth();
+  const { profile } = useProfile();
 
   const quickActions = [
     {
@@ -13,7 +15,8 @@ export function Dashboard() {
       icon: Plus,
       link: '/create-plan',
       color: 'from-emerald-500 to-emerald-600',
-      hoverColor: 'hover:from-emerald-600 hover:to-emerald-700'
+      hoverColor: 'hover:from-emerald-600 hover:to-emerald-700',
+      adminOnly: true
     },
     {
       title: 'Upcoming Events',
@@ -21,7 +24,8 @@ export function Dashboard() {
       icon: Calendar,
       link: '/events',
       color: 'from-blue-500 to-blue-600',
-      hoverColor: 'hover:from-blue-600 hover:to-blue-700'
+      hoverColor: 'hover:from-blue-600 hover:to-blue-700',
+      adminOnly: false
     },
     {
       title: 'Purchase Supplies',
@@ -29,18 +33,23 @@ export function Dashboard() {
       icon: CreditCard,
       link: '/purchase',
       color: 'from-gold-500 to-gold-600',
-      hoverColor: 'hover:from-gold-600 hover:to-gold-700'
+      hoverColor: 'hover:from-gold-600 hover:to-gold-700',
+      adminOnly: false
     },
     {
-      title: 'Profile Settings',
-      description: 'Update your profile and preferences',
-      icon: Settings,
-      link: '/profile',
+      title: 'Meet the Brotherhood',
+      description: 'Get to know your fellow brothers',
+      icon: Users,
+      link: '/about',
       color: 'from-slate-500 to-slate-600',
-      hoverColor: 'hover:from-slate-600 hover:to-slate-700'
+      hoverColor: 'hover:from-slate-600 hover:to-slate-700',
+      adminOnly: false
     }
   ];
 
+  const filteredActions = quickActions.filter(action => 
+    !action.adminOnly || profile?.is_admin
+  );
   return (
     <div className="space-y-8">
       {/* Welcome Header */}
@@ -48,15 +57,21 @@ export function Dashboard() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold mb-2">
-              As-salamu alaikum, {user?.email?.split('@')[0]}!
+              As-salamu alaikum, {profile?.full_name || user?.email?.split('@')[0]}!
             </h1>
             <p className="text-navy-200 text-lg">
               Welcome back to the Barchester brotherhood community
             </p>
+            {profile?.is_admin && (
+              <div className="mt-3 inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gold-400 text-navy-900">
+                <span className="w-2 h-2 bg-navy-900 rounded-full mr-2"></span>
+                Administrator
+              </div>
+            )}
           </div>
           <div className="text-right">
             <div className="text-navy-200 text-sm">Member since</div>
-            <div className="text-white font-semibold">{user?.created_at ? new Date(user.created_at).toLocaleDateString() : 'Recently'}</div>
+            <div className="text-white font-semibold">{profile?.created_at ? new Date(profile.created_at).toLocaleDateString() : 'Recently'}</div>
           </div>
         </div>
       </div>
@@ -64,8 +79,8 @@ export function Dashboard() {
       {/* Quick Actions Grid */}
       <div>
         <h2 className="text-2xl font-bold text-slate-800 mb-6">Quick Actions</h2>
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {quickActions.map((action, index) => {
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredActions.map((action, index) => {
             const Icon = action.icon;
             return (
               <Link

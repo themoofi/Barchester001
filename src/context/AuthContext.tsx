@@ -14,7 +14,9 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 interface AuthContextType {
   user: SupabaseUser | null;
   login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  loginWithGoogle: () => Promise<{ success: boolean; error?: string }>;
   signup: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  signupWithGoogle: () => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
   isLoading: boolean;
 }
@@ -64,6 +66,24 @@ export function AuthProvider({ children }: AuthProviderProps) {
     return { success: true };
   };
 
+  const loginWithGoogle = async () => {
+    setIsLoading(true);
+    
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/dashboard`
+      }
+    });
+
+    setIsLoading(false);
+
+    if (error) {
+      return { success: false, error: error.message };
+    }
+
+    return { success: true };
+  };
   const signup = async (email: string, password: string) => {
     setIsLoading(true);
     
@@ -84,12 +104,30 @@ export function AuthProvider({ children }: AuthProviderProps) {
     return { success: true };
   };
 
+  const signupWithGoogle = async () => {
+    setIsLoading(true);
+    
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/dashboard`
+      }
+    });
+
+    setIsLoading(false);
+
+    if (error) {
+      return { success: false, error: error.message };
+    }
+
+    return { success: true };
+  };
   const logout = async () => {
     await supabase.auth.signOut();
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, signup, logout, isLoading }}>
+    <AuthContext.Provider value={{ user, login, loginWithGoogle, signup, signupWithGoogle, logout, isLoading }}>
       {children}
     </AuthContext.Provider>
   );

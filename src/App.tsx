@@ -10,6 +10,10 @@ import { Dashboard } from './components/Dashboard';
 import { CreatePlanPage } from './components/CreatePlanPage';
 import { PurchasePage } from './components/PurchasePage';
 import { SuccessPage } from './components/SuccessPage';
+import { EventsPage } from './components/EventsPage';
+import { ProfilePage } from './components/ProfilePage';
+import { AboutPage } from './components/AboutPage';
+import { AdminPanel } from './components/AdminPanel';
 
 function App() {
   return (
@@ -49,10 +53,7 @@ function App() {
               path="/events"
               element={
                 <ProtectedRoute>
-                  <div className="text-center py-20">
-                    <h2 className="text-2xl font-bold text-slate-800 mb-4">Events Page</h2>
-                    <p className="text-slate-600">Coming soon...</p>
-                  </div>
+                  <EventsPage />
                 </ProtectedRoute>
               }
             />
@@ -60,10 +61,23 @@ function App() {
               path="/profile"
               element={
                 <ProtectedRoute>
-                  <div className="text-center py-20">
-                    <h2 className="text-2xl font-bold text-slate-800 mb-4">Profile Settings</h2>
-                    <p className="text-slate-600">Coming soon...</p>
-                  </div>
+                  <ProfilePage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/about"
+              element={
+                <ProtectedRoute>
+                  <AboutPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/admin"
+              element={
+                <ProtectedRoute>
+                  <AdminPanel />
                 </ProtectedRoute>
               }
             />
